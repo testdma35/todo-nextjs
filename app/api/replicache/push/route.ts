@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { Executor, tx } from "../../../../src/backend/pg";
 import {
   Client,
