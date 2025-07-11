@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { Todo, TodoUpdate } from "../todo";
 import { TodoItem } from "./todo-item";

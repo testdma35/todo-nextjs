@@ -1,5 +1,3 @@
-"use client";
-
 import App from "../src/frontend/app";
 import { M, mutators } from "../src/mutators";
 import { useEffect, useState } from "react";

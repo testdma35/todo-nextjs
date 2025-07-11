@@ -1,5 +1,3 @@
-"use client";
-
 import React, { ChangeEvent, KeyboardEvent, useRef, useState } from "react";
 import classnames from "classnames";
 

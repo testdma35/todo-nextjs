@@ -1,5 +1,3 @@
-"use client";
-
 import { nanoid } from "nanoid";
 import React from "react";
 import { Replicache } from "replicache";
@@ -10,6 +8,7 @@ import { listTodos, TodoUpdate } from "../todo";
 
 import Header from "./header";
 import MainSection from "./main-section";
+import "todomvc-app-css/index.css";
 
 // This is the top-level component for our app.
 const App = ({ rep }: { rep: Replicache<M> }) => {

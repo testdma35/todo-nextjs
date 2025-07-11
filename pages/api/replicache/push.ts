@@ -1,4 +1,4 @@
-import { Executor, tx } from "../../../../src/backend/pg";
+import { Executor, tx } from "../../../src/backend/pg";
 import {
   Client,
   createClient,
@@ -8,12 +8,12 @@ import {
   getGlobalVersion,
   setGlobalVersion,
   updateClient,
-} from "../../../../src/backend/data";
+} from "../../../src/backend/data";
 import { ReplicacheTransaction } from "replicache-transaction";
 import { z } from "zod";
-import { PostgresStorage } from "../../../../src/backend/postgres-storage";
-import { mutators } from "../../../../src/mutators";
-import { NextRequest, NextResponse } from "next/server";
+import { PostgresStorage } from "../../../src/backend/postgres-storage";
+import { mutators } from "../../../src/mutators";
+import { NextApiRequest, NextApiResponse } from "next/types";
 
 const mutationSchema = z.object({
   id: z.number(),
@@ -32,9 +32,9 @@ const clientStateNotFoundError = {};
 
 type PushRequest = z.infer<typeof pushRequestSchema>;
 
-export async function POST(req: NextRequest) {
-  const requestBody = await req.json();
-  const userID = req.cookies.get("userID")?.value ?? "anon";
+export default async function (req: NextApiRequest, res: NextApiResponse) {
+  const { body: requestBody } = req;
+  const userID = req.cookies["userID"] ?? "anon";
 
   console.log("Processing push", JSON.stringify(requestBody, null, ""));
 
@@ -45,16 +45,19 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     switch (e) {
       case authError:
-        return new NextResponse("Unauthorized", { status: 401 });
+        res.status(401).send("Unauthorized");
+        break;
       case clientStateNotFoundError:
-        return NextResponse.json({ error: "ClientStateNotFound" }, { status: 200 });
+        res.status(200).json({ error: "ClientStateNotFound" });
+        break;
       default:
         console.error("Error processing push:", e);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        res.status(500).send("Internal Server Error");
+        break;
     }
-    // Unreachable but type ensures function returns
+    return;
   }
-  return new NextResponse("OK", { status: 200 });
+  res.status(200).send("OK");
 }
 
 async function processPush(push: PushRequest, userID: string) {
