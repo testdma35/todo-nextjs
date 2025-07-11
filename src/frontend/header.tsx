@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import TodoTextInput from "./todo-text-input";
 
