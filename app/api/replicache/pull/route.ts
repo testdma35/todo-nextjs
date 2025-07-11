@@ -1,11 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { tx } from "../../../src/backend/pg";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { tx } from "../../../../src/backend/pg";
 import {
   getChangedEntries,
   getChangedLastMutationIDs,
   getClientGroup,
   getGlobalVersion,
-} from "../../../src/backend/data";
+} from "../../../../src/backend/data";
 import { z } from "zod";
 import type { PullResponse } from "replicache";
 
@@ -18,9 +19,9 @@ type PullRequest = z.infer<typeof pullRequestSchema>;
 
 const authError = {};
 
-export default async function (req: NextApiRequest, res: NextApiResponse) {
-  const { body: requestBody } = req;
-  const userID = req.cookies["userID"] ?? "anon";
+export async function POST(req: NextRequest) {
+  const requestBody = await req.json();
+  const userID = req.cookies.get("userID")?.value ?? "anon";
 
   console.log(`Processing pull`, JSON.stringify(requestBody, null, ""));
   const pullRequest = pullRequestSchema.parse(requestBody);
@@ -30,15 +31,12 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     pullResponse = await processPull(pullRequest, userID);
   } catch (e) {
     if (e === authError) {
-      res.status(401).send("Unauthorized");
-    } else {
-      console.error("Error processing pull:", e);
-      res.status(500).send("Internal Server Error");
+      return new NextResponse("Unauthorized", { status: 401 });
     }
-    return;
+    console.error("Error processing pull:", e);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
-
-  res.status(200).json(pullResponse);
+  return NextResponse.json(pullResponse, { status: 200 });
 }
 
 async function processPull(req: PullRequest, userID: string) {
