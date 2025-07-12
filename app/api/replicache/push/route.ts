@@ -44,6 +44,10 @@ export async function POST(req: NextRequest) {
   try {
     await processPush(push, userID);
   } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOTFOUND") {
+      console.error("Database host not found. Check SUPABASE_DATABASE_URL.");
+      return new NextResponse("Database connection error", { status: 500 });
+    }
     switch (e) {
       case authError:
         return new NextResponse("Unauthorized", { status: 401 });
