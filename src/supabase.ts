@@ -13,7 +13,24 @@ export function getAPIKey() {
 }
 
 export function getConnectionString() {
-  return getEnvVar(process.env.SUPABASE_DATABASE_URL, "SUPABASE_DATABASE_URL");
+  const raw =
+    process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL ?? "";
+  const conn = getEnvVar(raw, "SUPABASE_DATABASE_URL or DATABASE_URL");
+  try {
+    const url = new URL(conn);
+    // devs sometimes copy the db host ending with .supabase.co which only
+    // resolves within Supabase. Use the public pooler host instead.
+    if (url.hostname.endsWith(".supabase.co")) {
+      url.hostname = url.hostname.replace(
+        ".supabase.co",
+        ".pooler.supabase.com",
+      );
+      return url.toString();
+    }
+  } catch {
+    // ignore parse errors and fall through
+  }
+  return conn;
 }
 
 function getEnvVar(v: string | undefined, n: string) {
