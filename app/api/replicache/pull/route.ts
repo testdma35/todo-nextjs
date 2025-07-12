@@ -34,6 +34,12 @@ export async function POST(req: NextRequest) {
     if (e === authError) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    if (e instanceof Error && e.message.includes("Tenant or user not found")) {
+      console.error(
+        "Invalid Supabase credentials. Check SUPABASE_DATABASE_URL."
+      );
+      return new NextResponse("Database connection error", { status: 500 });
+    }
     if ((e as NodeJS.ErrnoException).code === "ENOTFOUND") {
       console.error("Database host not found. Check SUPABASE_DATABASE_URL.");
       return new NextResponse("Database connection error", { status: 500 });

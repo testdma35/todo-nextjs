@@ -44,6 +44,12 @@ export async function POST(req: NextRequest) {
   try {
     await processPush(push, userID);
   } catch (e) {
+    if (e instanceof Error && e.message.includes("Tenant or user not found")) {
+      console.error(
+        "Invalid Supabase credentials. Check SUPABASE_DATABASE_URL."
+      );
+      return new NextResponse("Database connection error", { status: 500 });
+    }
     if ((e as NodeJS.ErrnoException).code === "ENOTFOUND") {
       console.error("Database host not found. Check SUPABASE_DATABASE_URL.");
       return new NextResponse("Database connection error", { status: 500 });
@@ -52,7 +58,10 @@ export async function POST(req: NextRequest) {
       case authError:
         return new NextResponse("Unauthorized", { status: 401 });
       case clientStateNotFoundError:
-        return NextResponse.json({ error: "ClientStateNotFound" }, { status: 200 });
+        return NextResponse.json(
+          { error: "ClientStateNotFound" },
+          { status: 200 }
+        );
       default:
         console.error("Error processing push:", e);
         return new NextResponse("Internal Server Error", { status: 500 });
