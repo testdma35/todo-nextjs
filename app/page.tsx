@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import App from "../src/frontend/app";
-import { M, mutators } from "../src/mutators";
-import { useEffect, useState } from "react";
-import { Replicache } from "replicache";
-import { createClient } from "@supabase/supabase-js";
-import { getAPIKey, getProjectURL } from "../src/supabase";
-import Cookies from "js-cookie";
-import { nanoid } from "nanoid";
+import App from '../src/frontend/app';
+import { M, mutators } from '../src/mutators';
+import { useEffect, useState } from 'react';
+import { Replicache } from 'replicache';
+import { createClient } from '@supabase/supabase-js';
+import { getAPIKey, getProjectURL } from '../src/supabase';
+import Cookies from 'js-cookie';
+import { nanoid } from 'nanoid';
 
 export default function Home() {
   const [rep, setRep] = useState<Replicache<M> | null>(null);
 
   useEffect(() => {
-    let userID = Cookies.get("userID");
+    let userID = Cookies.get('userID');
     if (!userID) {
       userID = nanoid();
-      Cookies.set("userID", userID);
+      Cookies.set('userID', userID);
     }
 
     const r = new Replicache({
@@ -55,14 +55,14 @@ function listen(onPoke: () => Promise<void>) {
   const url = getProjectURL();
   const key = getAPIKey();
   const supabase = createClient(url, key);
-  const subscriptionChannel = supabase.channel("public:replicache_space");
+  const subscriptionChannel = supabase.channel('public:replicache_space');
   subscriptionChannel
     .on(
-      "postgres_changes",
+      'postgres_changes',
       {
-        event: "*",
-        schema: "public",
-        table: "replicache_space",
+        event: '*',
+        schema: 'public',
+        table: 'replicache_space',
       },
       () => {
         void onPoke();
