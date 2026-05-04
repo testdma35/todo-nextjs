@@ -12,11 +12,19 @@ const { isolationLevel, TransactionMode } = pgp.txMode;
 
 // Initialize connection immediately but don't await database creation.
 const db = pgp(getConnectionString());
-void db
-  .tx({ mode: new TransactionMode({ tiLevel: isolationLevel.serializable }) }, createDatabase)
-  .catch((err) => {
+
+async function init() {
+  try {
+    await db.tx(
+      { mode: new TransactionMode({ tiLevel: isolationLevel.serializable }) },
+      createDatabase,
+    );
+  } catch (err) {
     console.error("Error initializing database", err);
-  });
+  }
+}
+
+void init();
 
 // Helper to make sure we always access database at serializable level.
 export async function tx<R>(

@@ -13,7 +13,10 @@ export function getAPIKey() {
 }
 
 export function getConnectionString() {
-  return getEnvVar(process.env.SUPABASE_DATABASE_URL, "SUPABASE_DATABASE_URL");
+  return getEnvVar(
+    process.env.SUPABASE_DATABASE_URL ?? process.env.DATABASE_URL,
+    "SUPABASE_DATABASE_URL or DATABASE_URL",
+  );
 }
 
 function getEnvVar(v: string | undefined, n: string) {
