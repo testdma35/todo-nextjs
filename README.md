@@ -24,3 +24,4 @@ Running live at https://replicache-todo-nextjs.vercel.app/
   </li>
   <li><code>npm run dev</code></li>
 </ol>
+Agent status probe completed.
