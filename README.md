@@ -10,6 +10,12 @@ Also demonstrates:
 
 Running live at https://replicache-todo-nextjs.vercel.app/
 
+## Plans
+
+- [PLAN_A.md](PLAN_A.md)
+- [PLAN_B.md](PLAN_B.md)
+- [PLAN_C.md](PLAN_C.md)
+
 # Setup
 
 <ol>
